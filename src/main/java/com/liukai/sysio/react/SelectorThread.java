@@ -19,7 +19,7 @@ public class SelectorThread extends Thread {
   
   private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
   
-  private final ThreadLocal<LinkedBlockingQueue<Channel>> threadLocal = ThreadLocal
+  private static final ThreadLocal<LinkedBlockingQueue<Channel>> threadLocal = ThreadLocal
     .withInitial(LinkedBlockingQueue::new);
   
   /**

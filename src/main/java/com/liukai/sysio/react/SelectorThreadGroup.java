@@ -23,7 +23,7 @@ public class SelectorThreadGroup {
   private final AtomicInteger xid = new AtomicInteger(0);
   
   /**
-   * worker IO 线程组，用来具体干活的线程
+   * worker IO 线程组，处理绑定和处理客户端连接的线程
    */
   private SelectorThreadGroup workerGroup;
   
@@ -48,6 +48,8 @@ public class SelectorThreadGroup {
   public void setWorkerGroup(SelectorThreadGroup workerGroup) {
     this.workerGroup = workerGroup;
     // 为每一个 boss 线程设置它的工作组
+    // boss 线程的 accept 方法需要接受客户端连接
+    // 并且将连接通过 workerGroup 分配给 worker 线程
     for (SelectorThread thread : threads) {
       thread.setWorkerGroup(workerGroup);
     }
@@ -79,27 +81,12 @@ public class SelectorThreadGroup {
    * @param channel
    */
   public void nextSelector(Channel channel) {
-    if (channel instanceof ServerSocketChannel) {
-      // 通过一定的算法选择一个 IO 线程
-      // SelectorThread bossSelectorThread = nextBossSelectorThread();
-      SelectorThread bossSelectorThread = nextSelectorThread();
-      // 将 channel 放入 IO 线程对应的队列中
-      bossSelectorThread.putTask(channel);
-      // 修改 bossSelectorThread 的线程组，因为 boss 线程的 accept 方法需要接受客户端连接，
-      // 并且将连接通过工作组分配给 worker 线程，而不是分配给自己所属组的线程
-      // bossSelectorThread.setWorkerGroup(this.workerGroup);
-      // 唤醒 IO 线程里 selector 的阻塞状态，让对应的线程去自己的逻辑中完成注册 selector
-      bossSelectorThread.wakeupSelector();
-    } else {
-      // 通过一定的算法选择一个 IO 线程
-      // SelectorThread workerSelectorThread = nextWorkerSelectorThread();
-      SelectorThread workerSelectorThread = nextSelectorThread();
-      // 将 channel 放入 IO 线程对应的队列中
-      workerSelectorThread.putTask(channel);
-      // 唤醒 IO 线程里 selector 的阻塞状态，让对应的线程去自己的逻辑中完成注册 selector
-      workerSelectorThread.wakeupSelector();
-      
-    }
+    // 通过一定的算法选择一个 IO 线程
+    SelectorThread bossSelectorThread = nextSelectorThread();
+    // 将 channel 放入 IO 线程对应的队列中
+    bossSelectorThread.putTask(channel);
+    // 唤醒 IO 线程里 selector 的阻塞状态，让对应的线程去自己的逻辑中完成注册 selector
+    bossSelectorThread.wakeupSelector();
   }
   
   /**
