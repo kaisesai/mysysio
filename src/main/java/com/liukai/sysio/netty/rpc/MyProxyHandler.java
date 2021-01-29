@@ -50,7 +50,6 @@ public class MyProxyHandler implements InvocationHandler {
   
   private MsgHeader getMsgHeader() {
     MsgHeader header = new MsgHeader();
-    // int flag = 0x141414;
     int flag = 0x14141414;
     long requestID = Math.abs(UUID.randomUUID().getLeastSignificantBits());
     header.setFlag(flag);

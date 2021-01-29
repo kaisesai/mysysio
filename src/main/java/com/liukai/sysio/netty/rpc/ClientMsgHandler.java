@@ -9,11 +9,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * 用来接收服务器端的消息，服务器端的消息也是 MyMsg 格式
  */
 public class ClientMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
-  // public class ClientMsgHandler extends ChannelInboundHandlerAdapter {
   
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, MyMsg msg) throws Exception {
-    // public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+  protected void channelRead0(ChannelHandlerContext ctx, MyMsg msg) {
     System.out.println("received msg from server: " + msg);
     MyMsg myMsg = msg;
     // 读取消息并且返回个用户线程

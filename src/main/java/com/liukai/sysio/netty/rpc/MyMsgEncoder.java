@@ -29,8 +29,6 @@ public class MyMsgEncoder extends MessageToByteEncoder<MyMsg> {
     // 写到 ByteBuf
     out.writeBytes(headerBytes);
     out.writeBytes(bodyBytes);
-    
-    // ctx.flush();
   }
   
 }
