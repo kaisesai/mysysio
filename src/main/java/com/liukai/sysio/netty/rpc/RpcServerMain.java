@@ -1,7 +1,5 @@
-package com.liukai.sysio.netty.rpc.server;
+package com.liukai.sysio.netty.rpc;
 
-import com.liukai.sysio.netty.rpc.msg.MyMsgDecoder;
-import com.liukai.sysio.netty.rpc.msg.MyMsgEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -12,13 +10,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 /**
  * 基于 netty 的自定义 RPC 服务端程序
  */
-public class MyRpcServer {
+public class RpcServerMain {
   
   public static void main(String[] args) {
     // 启动 netty 服务端
     NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
-    // NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-    NioEventLoopGroup workerGroup = bossGroup;
+    NioEventLoopGroup workerGroup = new NioEventLoopGroup();
     
     // 启动类
     ServerBootstrap server = new ServerBootstrap();

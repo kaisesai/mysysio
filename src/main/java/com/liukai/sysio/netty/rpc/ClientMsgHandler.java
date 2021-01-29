@@ -1,8 +1,5 @@
-package com.liukai.sysio.netty.rpc.client;
+package com.liukai.sysio.netty.rpc;
 
-import com.liukai.sysio.netty.rpc.msg.MsgBody;
-import com.liukai.sysio.netty.rpc.msg.MsgHeader;
-import com.liukai.sysio.netty.rpc.msg.MyMsg;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -12,14 +9,17 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * 用来接收服务器端的消息，服务器端的消息也是 MyMsg 格式
  */
 public class ClientMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
+  // public class ClientMsgHandler extends ChannelInboundHandlerAdapter {
   
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, MyMsg msg) throws Exception {
+    // public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
     System.out.println("received msg from server: " + msg);
+    MyMsg myMsg = msg;
     // 读取消息并且返回个用户线程
     // 获取消息头
-    MsgHeader header = msg.getHeader();
-    MsgBody body = msg.getBody();
+    MsgHeader header = myMsg.getHeader();
+    MsgBody body = myMsg.getBody();
     // 完成任务 ID 对应的线程任务
     RpcResult.complete(header.getRequestId(), body.getResult());
   }

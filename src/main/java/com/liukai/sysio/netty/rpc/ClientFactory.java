@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc.client;
+package com.liukai.sysio.netty.rpc;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;

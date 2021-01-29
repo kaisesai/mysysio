@@ -1,7 +1,5 @@
-package com.liukai.sysio.netty.rpc.client;
+package com.liukai.sysio.netty.rpc;
 
-import com.liukai.sysio.netty.rpc.msg.MyMsgDecoder;
-import com.liukai.sysio.netty.rpc.msg.MyMsgEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;

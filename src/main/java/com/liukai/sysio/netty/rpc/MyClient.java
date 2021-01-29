@@ -1,11 +1,10 @@
-package com.liukai.sysio.netty.rpc.client;
+package com.liukai.sysio.netty.rpc;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 /**
  * 客户端连接
@@ -25,13 +24,11 @@ public class MyClient implements Closeable {
   
   public void write(Object msg) throws InterruptedException {
     ChannelFuture channelFuture = socketChannel.writeAndFlush(msg);
-    // 要同步发送？
-    // TODO: 2021/1/29
-    channelFuture.sync();
+    // channelFuture.sync();
   }
   
   @Override
-  public void close() throws IOException {
+  public void close() {
     socketChannel.close();
     eventLoopGroup.shutdownGracefully();
   }

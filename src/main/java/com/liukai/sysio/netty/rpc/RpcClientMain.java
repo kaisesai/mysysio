@@ -1,6 +1,4 @@
-package com.liukai.sysio.netty.rpc.client;
-
-import com.liukai.sysio.netty.rpc.service.Car;
+package com.liukai.sysio.netty.rpc;
 
 import java.lang.reflect.Proxy;
 
@@ -9,7 +7,7 @@ import java.lang.reflect.Proxy;
  *
  * @author liukai 2021年01月27日
  */
-public class MyRpcClient {
+public class RpcClientMain {
   
   // private static ConcurrentHashMap<String, Object> serverMap = new ConcurrentHashMap<>();
   
@@ -22,7 +20,7 @@ public class MyRpcClient {
       3. 客户端需要建立连接池，保存与服务器端的连接通道，避免每次连接重新建立
      */
     // 服务端代码、测试、多线程、 动态代理
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 10; i++) {
       int finalI = i;
       new Thread(() -> {
         // 获取代理对象

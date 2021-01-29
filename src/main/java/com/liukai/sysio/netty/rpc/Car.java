@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc.service;
+package com.liukai.sysio.netty.rpc;
 
 /**
  * Car 接口

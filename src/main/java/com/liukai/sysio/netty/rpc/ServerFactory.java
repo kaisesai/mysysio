@@ -1,7 +1,4 @@
-package com.liukai.sysio.netty.rpc.server;
-
-import com.liukai.sysio.netty.rpc.service.Car;
-import com.liukai.sysio.netty.rpc.service.CarImpl;
+package com.liukai.sysio.netty.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
 
