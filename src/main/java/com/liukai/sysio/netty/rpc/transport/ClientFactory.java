@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.transport;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ClientFactory {
   
-  public static final int POOL_SIZE = 1;
+  public static final int POOL_SIZE = 10;
   
   private static final ClientFactory CLIENT_FACTORY = new ClientFactory();
   

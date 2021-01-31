@@ -1,6 +1,7 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.client;
 
-import java.lang.reflect.Proxy;
+import com.liukai.sysio.netty.rpc.proxy.MyProxy;
+import com.liukai.sysio.netty.rpc.service.Car;
 
 /**
  * 实现基于 netty 网络通信的 rpc 框架客户端
@@ -8,8 +9,6 @@ import java.lang.reflect.Proxy;
  * @author liukai 2021年01月27日
  */
 public class RpcClientMain {
-  
-  // private static ConcurrentHashMap<String, Object> serverMap = new ConcurrentHashMap<>();
   
   public static void main(String[] args) {
     
@@ -24,33 +23,13 @@ public class RpcClientMain {
       int finalI = i;
       new Thread(() -> {
         // 获取代理对象
-        Car car = getProxy(Car.class);
+        Car car = MyProxy.getProxy(Car.class);
         // 执行代理对象的方法
         String result = car.drive("雅阁" + finalI);
-        System.out.println("client over msg : " + result);
+        System.out.println("result = " + result);
       }, "t" + i).start();
     }
     
-  }
-  
-  /**
-   * 获取代理对象
-   * <p>
-   * 代理对象主要负责建立所代理的服务信息
-   *
-   * @param carClass
-   * @param <T>
-   * @return
-   */
-  @SuppressWarnings(value = "unchecked")
-  private static <T> T getProxy(Class<T> interfaceClass) {
-    // 使用 JDK 的动态代理，还可以使用 CGLIB 代理
-    // 类加载器
-    ClassLoader classLoader = interfaceClass.getClassLoader();
-    // 接口信息
-    Class<?>[] interfaces = {interfaceClass};
-    // 执行处理器
-    return (T) Proxy.newProxyInstance(classLoader, interfaces, new MyProxyHandler(interfaceClass));
   }
   
 }

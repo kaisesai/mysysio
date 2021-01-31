@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.transport;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

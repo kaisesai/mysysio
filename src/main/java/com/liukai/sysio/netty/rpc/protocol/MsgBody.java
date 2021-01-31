@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.protocol;
 
 import lombok.Data;
 

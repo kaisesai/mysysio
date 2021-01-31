@@ -1,5 +1,7 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.transport;
 
+import com.liukai.sysio.netty.rpc.protocol.MyMsg;
+import com.liukai.sysio.netty.rpc.util.SerDerUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;

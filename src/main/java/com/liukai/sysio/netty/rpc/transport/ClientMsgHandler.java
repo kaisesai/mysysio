@@ -1,5 +1,8 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.transport;
 
+import com.liukai.sysio.netty.rpc.protocol.MsgBody;
+import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
+import com.liukai.sysio.netty.rpc.protocol.MyMsg;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 

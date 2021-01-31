@@ -1,4 +1,12 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.proxy;
+
+import com.liukai.sysio.netty.rpc.protocol.MsgBody;
+import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
+import com.liukai.sysio.netty.rpc.protocol.MyMsg;
+import com.liukai.sysio.netty.rpc.service.Dispatcher;
+import com.liukai.sysio.netty.rpc.transport.ClientFactory;
+import com.liukai.sysio.netty.rpc.transport.MyClient;
+import com.liukai.sysio.netty.rpc.transport.RpcResult;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -28,24 +36,34 @@ public class MyProxyHandler implements InvocationHandler {
    */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    // 消息体
-    MsgBody body = getMsgBody(method, args);
-    // 消息头
-    MsgHeader header = getMsgHeader();
-    // 创建消息类
-    MyMsg myMsg = new MyMsg(header, body);
-    
-    // netty 通道 连接池
-    MyClient myClient = ClientFactory.getClientFactory()
-      .getMyClient(new InetSocketAddress("127.0.0.1", 9090));
-    // 创建一个任务等待完成
-    CompletableFuture<Object> future = new CompletableFuture<>();
-    RpcResult.add(header.getRequestId(), future);
-    
-    myClient.write(myMsg);
   
-    // 阻塞等待 IO 线程执行结果
-    return future.get();
+    Object server = Dispatcher.getInstance().getServer(interfaceInfo.getName());
+    if (server != null) {
+      System.out.println("local FC...");
+      Method serverMethod = server.getClass()
+        .getMethod(method.getName(), method.getParameterTypes());
+      return serverMethod.invoke(server, args);
+    } else {
+      System.out.println("remote RPC...");
+      // 消息体
+      MsgBody body = getMsgBody(method, args);
+      // 消息头
+      MsgHeader header = getMsgHeader();
+      // 创建消息类
+      MyMsg myMsg = new MyMsg(header, body);
+    
+      // netty 通道 连接池
+      MyClient myClient = ClientFactory.getClientFactory()
+        .getMyClient(new InetSocketAddress("127.0.0.1", 9090));
+      // 创建一个任务等待完成
+      CompletableFuture<Object> future = new CompletableFuture<>();
+      RpcResult.add(header.getRequestId(), future);
+    
+      myClient.write(myMsg);
+    
+      // 阻塞等待 IO 线程执行结果
+      return future.get();
+    }
   }
   
   private MsgHeader getMsgHeader() {

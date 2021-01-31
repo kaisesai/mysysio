@@ -1,5 +1,8 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.transport;
 
+import com.liukai.sysio.netty.rpc.protocol.MsgBody;
+import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
+import com.liukai.sysio.netty.rpc.protocol.MyMsg;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -38,9 +41,9 @@ public class MyMsgDecoder extends ByteToMessageDecoder {
       ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
       ObjectInputStream ois = new ObjectInputStream(bis);
       MsgHeader header = (MsgHeader) ois.readObject();
-    
+  
       // 剩余的读取消息体，当前 ByteBuf 中剩余的数据是否够一个 body，如果不够则退出方法，保留头部数据和剩余数据，留着下次有数据到达再合并起来处理。
-      if (in.readableBytes() >= header.getBodyLength()) {
+      if (in.readableBytes() >= header.getBodyLength() + HEADER_SIZE) {
         // 读取消息体处理指针
         in.readBytes(HEADER_SIZE);
         // 读取消息体
@@ -53,9 +56,9 @@ public class MyMsgDecoder extends ByteToMessageDecoder {
         // 反序列化消息体
         ByteArrayInputStream bis2 = new ByteArrayInputStream(data);
         ObjectInputStream ois2 = new ObjectInputStream(bis2);
-  
+    
         MsgBody body = (MsgBody) ois2.readObject();
-  
+    
         // 这里还需要注意下，处理需要解析 header 中的 flag，需要根据它来判断不同业务协议，从而处理不同的类型
         // 构建 MyMsg
         MyMsg myMsg = new MyMsg(header, body);

@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

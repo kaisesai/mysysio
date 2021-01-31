@@ -1,5 +1,9 @@
-package com.liukai.sysio.netty.rpc;
+package com.liukai.sysio.netty.rpc.server;
 
+import com.liukai.sysio.netty.rpc.protocol.MsgBody;
+import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
+import com.liukai.sysio.netty.rpc.protocol.MyMsg;
+import com.liukai.sysio.netty.rpc.service.Dispatcher;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -53,7 +57,7 @@ public class ServerMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
   private void execBusiness(MyMsg msg, String ioThreadName, ChannelHandlerContext ctx) {
     try {
       // 执行目标接口
-      Object server = ServerFactory.getServer(msg.getBody().getInterfaceInfo());
+      Object server = Dispatcher.getServer(msg.getBody().getInterfaceInfo());
       Method method = server.getClass()
         .getMethod(msg.getBody().getMethod(), msg.getBody().getParameterTypes());
       Object result = method.invoke(server, msg.getBody().getMethodArgs());
