@@ -1,6 +1,6 @@
-package com.liukai.sysio.netty.rpc.transport;
+package com.liukai.sysio.netty.rpc.transport.rpc;
 
-import com.liukai.sysio.netty.rpc.protocol.MsgBody;
+import com.liukai.sysio.netty.rpc.protocol.MsgContent;
 import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
 import com.liukai.sysio.netty.rpc.protocol.MyMsg;
 import io.netty.buffer.ByteBuf;
@@ -18,7 +18,7 @@ import java.util.List;
  * <p>
  * ByteToMessageDecoder 类执行了 channelRead，并且它使用了 Cumulator 累加器累加 ByteBuf 中的数据。
  */
-public class MyMsgDecoder extends ByteToMessageDecoder {
+public class MyRpcDecoder extends ByteToMessageDecoder {
   
   public static final int HEADER_SIZE = 105;
   
@@ -56,8 +56,8 @@ public class MyMsgDecoder extends ByteToMessageDecoder {
         // 反序列化消息体
         ByteArrayInputStream bis2 = new ByteArrayInputStream(data);
         ObjectInputStream ois2 = new ObjectInputStream(bis2);
-    
-        MsgBody body = (MsgBody) ois2.readObject();
+  
+        MsgContent body = (MsgContent) ois2.readObject();
     
         // 这里还需要注意下，处理需要解析 header 中的 flag，需要根据它来判断不同业务协议，从而处理不同的类型
         // 构建 MyMsg

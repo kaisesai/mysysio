@@ -1,5 +1,6 @@
 package com.liukai.sysio.netty.rpc.client;
 
+import com.liukai.sysio.netty.rpc.protocol.ProtocolType;
 import com.liukai.sysio.netty.rpc.proxy.MyProxy;
 import com.liukai.sysio.netty.rpc.service.Car;
 
@@ -19,11 +20,13 @@ public class RpcClientMain {
       3. 客户端需要建立连接池，保存与服务器端的连接通道，避免每次连接重新建立
      */
     // 服务端代码、测试、多线程、 动态代理
+    ProtocolType protocolType = ProtocolType.HTTP;
+  
     for (int i = 0; i < 10; i++) {
       int finalI = i;
       new Thread(() -> {
         // 获取代理对象
-        Car car = MyProxy.getProxy(Car.class);
+        Car car = MyProxy.getProxy(Car.class, protocolType);
         // 执行代理对象的方法
         String result = car.drive("雅阁" + finalI);
         System.out.println("result = " + result);

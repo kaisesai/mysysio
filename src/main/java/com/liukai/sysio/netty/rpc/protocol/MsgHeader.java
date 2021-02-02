@@ -3,6 +3,7 @@ package com.liukai.sysio.netty.rpc.protocol;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * 消息头
@@ -15,7 +16,7 @@ public class MsgHeader implements Serializable {
   /**
    * 消息 ID
    */
-  private long requestId;
+  private String requestId;
   
   /**
    * 消息标识
@@ -26,5 +27,17 @@ public class MsgHeader implements Serializable {
    * 消息体长度
    */
   private int bodyLength;
+  
+  public static MsgHeader getMsgHeader() {
+    MsgHeader header = new MsgHeader();
+    int flag = 0x14141414;
+    header.setFlag(flag);
+    header.setRequestId(buildRequestID());
+    return header;
+  }
+  
+  public static String buildRequestID() {
+    return String.valueOf(UUID.randomUUID().getLeastSignificantBits());
+  }
   
 }

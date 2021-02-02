@@ -18,9 +18,9 @@ public class MyMsg {
   /**
    * 消息体
    */
-  private MsgBody body;
+  private MsgContent body;
   
-  public MyMsg(MsgHeader header, MsgBody body) {
+  public MyMsg(MsgHeader header, MsgContent body) {
     this.header = header;
     this.body = body;
   }

@@ -3,12 +3,13 @@ package com.liukai.sysio.netty.rpc.protocol;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * 消息体
  */
 @Data
-public class MsgBody implements Serializable {
+public class MsgContent implements Serializable {
   
   /**
    * 接口信息
@@ -34,5 +35,14 @@ public class MsgBody implements Serializable {
    * 执行结果
    */
   private Object result;
+  
+  public static MsgContent getMsgContent(Method method, Object[] args, Class<?> interfaceInfo) {
+    MsgContent body = new MsgContent();
+    body.setInterfaceInfo(interfaceInfo.getName());
+    body.setMethod(method.getName());
+    body.setMethodArgs(args);
+    body.setParameterTypes(method.getParameterTypes());
+    return body;
+  }
   
 }

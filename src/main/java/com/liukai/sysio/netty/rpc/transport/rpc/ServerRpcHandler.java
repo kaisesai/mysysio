@@ -1,20 +1,18 @@
-package com.liukai.sysio.netty.rpc.server;
+package com.liukai.sysio.netty.rpc.transport.rpc;
 
-import com.liukai.sysio.netty.rpc.protocol.MsgBody;
+import com.liukai.sysio.netty.rpc.protocol.MsgContent;
 import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
 import com.liukai.sysio.netty.rpc.protocol.MyMsg;
-import com.liukai.sysio.netty.rpc.service.Dispatcher;
+import com.liukai.sysio.netty.rpc.service.ServiceInvoker;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
-import java.lang.reflect.Method;
 
 /**
  * 服务端消息接收处理器
  * <p>
  * 处理客户端的消息
  */
-public class ServerMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
+public class ServerRpcHandler extends SimpleChannelInboundHandler<MyMsg> {
   
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, MyMsg msg) {
@@ -57,11 +55,7 @@ public class ServerMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
   private void execBusiness(MyMsg msg, String ioThreadName, ChannelHandlerContext ctx) {
     try {
       // 执行目标接口
-      Object server = Dispatcher.getServer(msg.getBody().getInterfaceInfo());
-      Method method = server.getClass()
-        .getMethod(msg.getBody().getMethod(), msg.getBody().getParameterTypes());
-      Object result = method.invoke(server, msg.getBody().getMethodArgs());
-      System.out.println("result = " + result);
+      Object result = ServiceInvoker.invokeTarget(msg.getBody());
   
       // 业务线程的名称
       String busThreadName = Thread.currentThread().getName();
@@ -71,7 +65,7 @@ public class ServerMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
   
       // 写回数据
       MsgHeader header = getMsgHeader(msg.getHeader().getRequestId());
-      MsgBody body = getMsgBody(result);
+      MsgContent body = getMsgBody(result);
       MyMsg myMsg = new MyMsg(header, body);
       ctx.writeAndFlush(myMsg);
   
@@ -80,7 +74,7 @@ public class ServerMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
     }
   }
   
-  private MsgHeader getMsgHeader(long requestID) {
+  private MsgHeader getMsgHeader(String requestID) {
     MsgHeader header = new MsgHeader();
     int flag = 0x14141414;
     header.setFlag(flag);
@@ -88,8 +82,8 @@ public class ServerMsgHandler extends SimpleChannelInboundHandler<MyMsg> {
     return header;
   }
   
-  private MsgBody getMsgBody(Object result) {
-    MsgBody body = new MsgBody();
+  private MsgContent getMsgBody(Object result) {
+    MsgContent body = new MsgContent();
     body.setResult(result);
     return body;
   }

@@ -1,4 +1,4 @@
-package com.liukai.sysio.netty.rpc.transport;
+package com.liukai.sysio.netty.rpc.transport.rpc;
 
 import com.liukai.sysio.netty.rpc.protocol.MyMsg;
 import com.liukai.sysio.netty.rpc.util.SerDerUtil;
@@ -11,7 +11,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * <p>
  * 将 MyMsg 类型的消息转成 ByteBuf 类型
  */
-public class MyMsgEncoder extends MessageToByteEncoder<MyMsg> {
+public class MyRpcEncoder extends MessageToByteEncoder<MyMsg> {
   
   @Override
   protected void encode(ChannelHandlerContext ctx, MyMsg msg, ByteBuf out) throws Exception {

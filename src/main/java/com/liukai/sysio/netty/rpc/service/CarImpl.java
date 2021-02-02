@@ -11,4 +11,11 @@ public class CarImpl implements Car {
     return "server res" + name;
   }
   
+  @Override
+  public Person getDriver(String name) {
+    System.out
+      .println(Thread.currentThread().getName() + " getDriver server get client args: " + name);
+    return new Person(name, 20);
+  }
+  
 }

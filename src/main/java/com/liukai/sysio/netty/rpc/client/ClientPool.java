@@ -1,10 +1,17 @@
-package com.liukai.sysio.netty.rpc.transport;
+package com.liukai.sysio.netty.rpc.client;
 
+import com.liukai.sysio.netty.rpc.protocol.ProtocolType;
+import com.liukai.sysio.netty.rpc.transport.http.ClientHttpHandler;
+import com.liukai.sysio.netty.rpc.transport.rpc.ClientRpcHandler;
+import com.liukai.sysio.netty.rpc.transport.rpc.MyRpcDecoder;
+import com.liukai.sysio.netty.rpc.transport.rpc.MyRpcEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import lombok.Data;
 
 import java.net.InetSocketAddress;
@@ -25,9 +32,15 @@ public class ClientPool {
   
   private Object[] locks;
   
-  public ClientPool(int poolSize) {
+  /**
+   * 协议类型
+   */
+  private ProtocolType protocolType;
+  
+  public ClientPool(int poolSize, ProtocolType protocolType) {
     this.clients = new MyClient[poolSize];
     locks = new Object[poolSize];
+    this.protocolType = protocolType;
     
     // 初始化锁信息
     for (int i = 0; i < locks.length; i++) {
@@ -69,16 +82,22 @@ public class ClientPool {
         ChannelFuture future = bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
           .handler(new ChannelInitializer<NioSocketChannel>() {
             @Override
-            protected void initChannel(NioSocketChannel ch) throws Exception {
-              // System.out.println("init client channel");
-              // 添加一个消息处理器，用于接收服务器端消息
-              // 它的发送消息是在 rpc 调用代理方法上去做
-              // 消息编码器
-              ch.pipeline().addLast(new MyMsgEncoder());
-              // 消息解码器
-              ch.pipeline().addLast(new MyMsgDecoder());
-              // 消息处理器
-              ch.pipeline().addLast(new ClientMsgHandler());
+            protected void initChannel(NioSocketChannel ch) {
+              System.out.println("init client channel transport protocol = " + protocolType);
+              if (protocolType == ProtocolType.HTTP) {
+                // http 编解码处理器
+                ch.pipeline().addLast(new HttpClientCodec());
+                ch.pipeline().addLast(new HttpObjectAggregator(512 * 1024));
+                ch.pipeline().addLast(new ClientHttpHandler());
+      
+              } else if (protocolType == ProtocolType.RPC) {
+                // 消息编码器
+                ch.pipeline().addLast(new MyRpcEncoder());
+                // 消息解码器
+                ch.pipeline().addLast(new MyRpcDecoder());
+                // 消息处理器
+                ch.pipeline().addLast(new ClientRpcHandler());
+              }
             }
           })
           // 同步连接服务器端

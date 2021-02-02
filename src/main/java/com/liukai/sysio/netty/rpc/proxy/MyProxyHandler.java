@@ -1,17 +1,11 @@
 package com.liukai.sysio.netty.rpc.proxy;
 
-import com.liukai.sysio.netty.rpc.protocol.MsgBody;
-import com.liukai.sysio.netty.rpc.protocol.MsgHeader;
-import com.liukai.sysio.netty.rpc.protocol.MyMsg;
-import com.liukai.sysio.netty.rpc.service.Dispatcher;
-import com.liukai.sysio.netty.rpc.transport.ClientFactory;
-import com.liukai.sysio.netty.rpc.transport.MyClient;
-import com.liukai.sysio.netty.rpc.transport.RpcResult;
+import com.liukai.sysio.netty.rpc.client.ClientFactory;
+import com.liukai.sysio.netty.rpc.protocol.MsgContent;
+import com.liukai.sysio.netty.rpc.protocol.ProtocolType;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -21,8 +15,11 @@ public class MyProxyHandler implements InvocationHandler {
   
   private final Class<?> interfaceInfo;
   
-  public MyProxyHandler(Class<?> interfaceInfo) {
+  private final ProtocolType protocolType;
+  
+  public MyProxyHandler(Class<?> interfaceInfo, ProtocolType protocolType) {
     this.interfaceInfo = interfaceInfo;
+    this.protocolType = protocolType;
   }
   
   /**
@@ -36,8 +33,8 @@ public class MyProxyHandler implements InvocationHandler {
    */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-  
-    Object server = Dispatcher.getInstance().getServer(interfaceInfo.getName());
+    // Object server = ServiceInvoker.DISPATCHER.getServer(interfaceInfo.getName());
+    Object server = null;
     if (server != null) {
       System.out.println("local FC...");
       Method serverMethod = server.getClass()
@@ -46,42 +43,12 @@ public class MyProxyHandler implements InvocationHandler {
     } else {
       System.out.println("remote RPC...");
       // 消息体
-      MsgBody body = getMsgBody(method, args);
-      // 消息头
-      MsgHeader header = getMsgHeader();
-      // 创建消息类
-      MyMsg myMsg = new MyMsg(header, body);
-    
-      // netty 通道 连接池
-      MyClient myClient = ClientFactory.getClientFactory()
-        .getMyClient(new InetSocketAddress("127.0.0.1", 9090));
-      // 创建一个任务等待完成
-      CompletableFuture<Object> future = new CompletableFuture<>();
-      RpcResult.add(header.getRequestId(), future);
-    
-      myClient.write(myMsg);
-    
+      MsgContent content = MsgContent.getMsgContent(method, args, interfaceInfo);
+      // 传输
+      CompletableFuture<Object> future = ClientFactory.transport(content, protocolType);
       // 阻塞等待 IO 线程执行结果
       return future.get();
     }
-  }
-  
-  private MsgHeader getMsgHeader() {
-    MsgHeader header = new MsgHeader();
-    int flag = 0x14141414;
-    long requestID = Math.abs(UUID.randomUUID().getLeastSignificantBits());
-    header.setFlag(flag);
-    header.setRequestId(requestID);
-    return header;
-  }
-  
-  private MsgBody getMsgBody(Method method, Object[] args) {
-    MsgBody body = new MsgBody();
-    body.setInterfaceInfo(interfaceInfo.getName());
-    body.setMethod(method.getName());
-    body.setMethodArgs(args);
-    body.setParameterTypes(method.getParameterTypes());
-    return body;
   }
   
 }

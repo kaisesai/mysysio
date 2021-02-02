@@ -13,4 +13,12 @@ public interface Car {
    */
   String drive(String name);
   
+  /**
+   * 获取司机信息
+   *
+   * @param name
+   * @return
+   */
+  Person getDriver(String name);
+  
 }

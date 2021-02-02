@@ -8,14 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RpcResult {
   
-  private static final ConcurrentHashMap<Long, CompletableFuture<Object>> MAP
+  private static final ConcurrentHashMap<String, CompletableFuture<Object>> MAP
     = new ConcurrentHashMap<>();
   
-  public static void add(Long requestId, CompletableFuture<Object> runnable) {
+  public static void add(String requestId, CompletableFuture<Object> runnable) {
     MAP.putIfAbsent(requestId, runnable);
   }
   
-  public static void complete(Long requestId, Object value) {
+  public static void complete(String requestId, Object value) {
     CompletableFuture<Object> runnable = MAP.get(requestId);
     if (runnable == null) {
       return;

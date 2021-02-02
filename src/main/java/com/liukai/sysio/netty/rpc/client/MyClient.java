@@ -1,6 +1,5 @@
-package com.liukai.sysio.netty.rpc.transport;
+package com.liukai.sysio.netty.rpc.client;
 
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
@@ -22,9 +21,8 @@ public class MyClient implements Closeable {
     this.eventLoopGroup = eventLoopGroup;
   }
   
-  public void write(Object msg) throws InterruptedException {
-    ChannelFuture channelFuture = socketChannel.writeAndFlush(msg);
-    // channelFuture.sync();
+  public void write(Object msg) {
+    socketChannel.writeAndFlush(msg);
   }
   
   @Override
